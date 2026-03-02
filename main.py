@@ -13,7 +13,7 @@ def main():
     TEST_PATH = os.path.join("data", "test.csv") 
     OUTPUT_DIR = "severity_model"
     PLOTS_DIR = os.path.join(OUTPUT_DIR, "plots")
-    SUBMISSION_PATH = os.path.join(OUTPUT_DIR, "submission_final_114.csv") 
+    SUBMISSION_PATH = os.path.join(OUTPUT_DIR, "submission_final.csv") 
     
     # Création du répertoire de sortie s'il n'existe pas
     os.makedirs(PLOTS_DIR, exist_ok=True)
