@@ -1,94 +1,110 @@
 import numpy as np
-from sklearn.model_selection import StratifiedKFold
-from sklearn.ensemble import HistGradientBoostingClassifier
+from sklearn.base import BaseEstimator, ClassifierMixin
 from sklearn.calibration import CalibratedClassifierCV
+from sklearn.ensemble import HistGradientBoostingClassifier
 from xgboost import XGBClassifier
-from sklearn.metrics import brier_score_loss, roc_auc_score
 
-def train_frequency_ensemble(X, y, n_folds=5):
+# =========================================================
+# CLASSE D'ENSEMBLE POUR LA MODÉLISATION DE LA FRÉQUENCE
+# =========================================================
+
+class FrequencyEnsemble(BaseEstimator, ClassifierMixin):
     """
-    Entraîne un modèle d'ensemble (XGBoost + HistGradient) avec Calibration.
-    C'est la méthode "Robuste" de ton collègue.
+    Classe personnalisée (Wrapper) implémentant une approche d'apprentissage 
+    ensembliste (Ensemble Learning) pour la prédiction de la fréquence des sinistres.
+    
+    Hérite de BaseEstimator et ClassifierMixin pour garantir la compatibilité 
+    avec l'écosystème Scikit-Learn. Le modèle combine les prédictions d'un algorithme 
+    XGBoost et d'un HistGradientBoosting via une moyenne des probabilités (Soft Voting).
     """
-    print(f"--- Lancement Modèle Fréquence (Ensemble Optimisé - {n_folds} folds) ---")
-    
-    skf = StratifiedKFold(n_splits=n_folds, shuffle=True, random_state=42)
-    oof_preds = np.zeros(len(X))
-    
-    # Boucle de Validation Croisée
-    for fold, (train_idx, val_idx) in enumerate(skf.split(X, y)):
-        X_train, X_val = X[train_idx], X[val_idx]
-        y_train, y_val = y[train_idx], y[val_idx]
+    def __init__(self, ratio):
+        self.ratio = ratio
         
-        # Gestion du déséquilibre de classe (Ratio 0 vs 1)
-        ratio = (y_train == 0).sum() / (y_train == 1).sum()
-        
-        # --- MODELE A : XGBoost Optimisé ---
-        # Note: On utilise CalibratedClassifierCV pour avoir des probas précises
-        xgb_model = XGBClassifier(
-            n_estimators=300, 
+        # 1. Estimateur de base 1 : XGBoost
+        # Configuration optimisée pour traiter le fort déséquilibre de classes 
+        # (scale_pos_weight) inhérent aux données d'assurance.
+        xgb_base = XGBClassifier(
+            n_estimators=354, 
             learning_rate=0.01, 
             max_depth=4, 
-            min_child_weight=7, 
-            subsample=0.8, 
-            colsample_bytree=0.6, 
-            scale_pos_weight=ratio, # Important pour l'imbalance
+            scale_pos_weight=self.ratio, 
             random_state=42, 
             n_jobs=-1,
             verbosity=0
         )
-        # Calibration Isotonique (Ajuste les probabilités)
-        calibrated_xgb = CalibratedClassifierCV(xgb_model, method='isotonic', cv=3)
-        calibrated_xgb.fit(X_train, y_train)
-        p_xgb = calibrated_xgb.predict_proba(X_val)[:, 1]
+        # Application d'une calibration isotonique en validation croisée (5 plis)
+        # Objectif : Obtenir des probabilités réelles de sinistre et non de simples scores.
+        self.xgb_calibrated = CalibratedClassifierCV(xgb_base, method='isotonic', cv=5)
         
-        # --- MODELE B : HistGradientBoosting (Rapide et Robuste) ---
-        hgb_model = HistGradientBoostingClassifier(
+        # 2. Estimateur de base 2 : HistGradientBoosting
+        # Modèle robuste et rapide, utilisant une pondération interne équilibrée.
+        hgb_base = HistGradientBoostingClassifier(
             learning_rate=0.05, 
             max_iter=200, 
             class_weight='balanced', 
             random_state=42
         )
-        calibrated_hgb = CalibratedClassifierCV(hgb_model, method='isotonic', cv=3)
-        calibrated_hgb.fit(X_train, y_train)
-        p_hgb = calibrated_hgb.predict_proba(X_val)[:, 1]
-        
-        # --- ENSEMBLING (Moyenne des deux) ---
-        oof_preds[val_idx] = (p_xgb + p_hgb) / 2
-        
-        print(f"Fold {fold+1}/{n_folds} terminé.")
+        self.hgb_calibrated = CalibratedClassifierCV(hgb_base, method='isotonic', cv=5)
 
-    # --- CALCUL DES SCORES GLOBAUX ---
-    # Brier Score (Equivalent RMSE pour les probas)
-    brier = brier_score_loss(y, oof_preds)
-    auc = roc_auc_score(y, oof_preds)
+    def fit(self, X, y):
+        """
+        Ajuste les modèles de base calibrés sur les données d'apprentissage.
+        """
+        print("      -> Ajustement du modèle XGBoost (Calibration Isotonique, CV=5)...")
+        self.xgb_calibrated.fit(X, y)
+        
+        print("      -> Ajustement du modèle HistGradientBoosting (Calibration Isotonique, CV=5)...")
+        self.hgb_calibrated.fit(X, y)
+        
+        return self
+
+    def predict_proba(self, X):
+        """
+        Estime la probabilité d'occurrence d'un sinistre pour chaque observation.
+        """
+        # Récupération des probabilités individuelles de chaque estimateur
+        p_xgb = self.xgb_calibrated.predict_proba(X)
+        p_hgb = self.hgb_calibrated.predict_proba(X)
+        
+        # Agrégation des prédictions (Moyenne arithmétique stricte)
+        # Cette approche réduit la variance et stabilise les prédictions globales.
+        return (p_xgb + p_hgb) / 2
+        
+    def predict(self, X):
+        """
+        Génère la classe prédite (0 ou 1) basée sur un seuil de probabilité standard.
+        Méthode requise par l'interface Scikit-Learn.
+        """
+        probas = self.predict_proba(X)[:, 1]
+        return (probas >= 0.5).astype(int)
+
+
+# =========================================================
+# FONCTION PRINCIPALE D'ENTRAÎNEMENT
+# =========================================================
+
+def train_final_model(X, y):
+    """
+    Fonction d'interface appelée par les modules main.py et prime_cv.py.
+    Instancie et entraîne le modèle composite (Ensemble) pour la fréquence.
     
-    return oof_preds, brier, auc
-
-def train_final_model(X, y, calibrate=True, method="sigmoid"):
-    print("--- Entraînement Final Fréquence ---")
+    Paramètres :
+    - X : Matrice des variables explicatives.
+    - y : Vecteur cible binaire (Présence/Absence de sinistre).
+    
+    Retourne :
+    - model : L'estimateur composite entraîné.
+    """
+    print("Entraînement du modèle composite Fréquence (XGBoost + HistGradientBoosting)...")
+    
+    # Détermination du ratio de déséquilibre des classes (Non-sinistré / Sinistré)
+    # Nécessaire pour pénaliser correctement l'erreur sur la classe minoritaire.
     ratio = (y == 0).sum() / (y == 1).sum()
-
-    base = XGBClassifier(
-        n_estimators=354,
-        learning_rate=0.01,
-        max_depth=4,
-        min_child_weight=7,
-        subsample=0.8,
-        colsample_bytree=0.6,
-        reg_alpha=0.1,
-        reg_lambda=10,
-        scale_pos_weight=ratio,
-        random_state=42,
-        n_jobs=-1,
-        verbosity=0
-    )
-
-    if not calibrate:
-        base.fit(X, y)
-        return base
-
-    # calibration interne en CV
-    model = CalibratedClassifierCV(base, method=method, cv=5)
+    
+    # Instanciation de la classe sur-mesure avec le ratio calculé
+    model = FrequencyEnsemble(ratio=ratio)
+    
+    # Entraînement global de la structure d'ensemble
     model.fit(X, y)
+    
     return model

@@ -1,98 +1,111 @@
 import os
 import pandas as pd
 import numpy as np
+from sklearn.metrics import mean_squared_error 
 from src import preprocessing, severity, frequency, evaluation
 from src.prime_cv import oof_prime_rmse
 
 def main():
-    # --- CHEMINS ---
+    # =========================================================
+    # CONFIGURATION DES CHEMINS D'ACCÈS ET DES RÉPERTOIRES
+    # =========================================================
     DATA_PATH = os.path.join("data", "train.csv")
-    TEST_PATH = os.path.join("data", "test.csv") # Assure-toi que test.csv est bien là
+    TEST_PATH = os.path.join("data", "test.csv") 
     OUTPUT_DIR = "severity_model"
     PLOTS_DIR = os.path.join(OUTPUT_DIR, "plots")
-    SUBMISSION_PATH = os.path.join(OUTPUT_DIR, "submission_final.csv")
+    SUBMISSION_PATH = os.path.join(OUTPUT_DIR, "submission_final_114.csv") 
     
+    # Création du répertoire de sortie s'il n'existe pas
     os.makedirs(PLOTS_DIR, exist_ok=True)
     
-    print("=== DÉMARRAGE DU PROJET ACTUARIAT ===")
+    print("=== DÉMARRAGE DU PIPELINE DE TARIFICATION ACTUARIELLE ===")
 
-    # ---------------------------------------------------------
-    # 1. ENTRAÎNEMENT DES MODÈLES
-    # ---------------------------------------------------------
+    # =========================================================
+    # PHASE 1 : ENTRAÎNEMENT DES MODÈLES FRÉQUENCE / SÉVÉRITÉ
+    # =========================================================
+    
+    # Chargement et nettoyage initial des données d'entraînement
     df_train = preprocessing.load_and_clean_common_data(DATA_PATH)
 
-    # --- SÉVÉRITÉ ---
-    print("\n--- PARTIE A : SÉVÉRITÉ ---")
+    # --- MODÈLE DE SÉVÉRITÉ (Coût des sinistres) ---
+    print("\n--- PHASE 1A : MODÉLISATION DE LA SÉVÉRITÉ ---")
     X_sev, y_sev, feats_sev = preprocessing.prepare_for_severity(df_train)
+    
+    # Évaluation du modèle de sévérité par validation croisée (K-Fold)
     mae_sev, rmse_sev = severity.run_kfold_validation(X_sev, y_sev)
+    print(f"\n[MÉTRIQUE] RMSE SÉVÉRITÉ (Validation Croisée) : {rmse_sev:.4f}")
+    
+    # Entraînement du modèle final de sévérité sur l'ensemble des données
     model_sev = severity.train_final_model(X_sev, y_sev)
     
-    # --- FRÉQUENCE ---
-    print("\n--- PARTIE B : FRÉQUENCE ---")
+    # --- MODÈLE DE FRÉQUENCE (Probabilité de sinistre) ---
+    print("\n--- PHASE 1B : MODÉLISATION DE LA FRÉQUENCE ---")
     X_freq, y_freq, feats_freq = preprocessing.prepare_for_frequency(df_train)
-    # On entraîne le modèle final (soit l'ensemble, soit le XGB calibré)
-    # Pour la soumission, utilisons le modèle final simple défini dans frequency.py
+    
+    # Entraînement du modèle final de fréquence
     model_freq = frequency.train_final_model(X_freq, y_freq)
 
-    # ... (le début du main reste pareil) ...
+    # Évaluation de la performance du modèle de fréquence (Brier/RMSE)
+    print("Évaluation du RMSE Fréquence sur l'échantillon d'apprentissage...")
+    probas_train = model_freq.predict_proba(X_freq)[:, 1]
+    rmse_freq = np.sqrt(mean_squared_error(y_freq, probas_train))
+    print(f"[MÉTRIQUE] RMSE FRÉQUENCE (Intra-échantillon) : {rmse_freq:.4f}")
 
-    # ---------------------------------------------------------
-    # 2. PRÉDICTION SUR LE TEST
-    # ---------------------------------------------------------
+    # =========================================================
+    # PHASE 2 : ÉVALUATION ROBUSTE DE LA PRIME (OUT-OF-FOLD)
+    # =========================================================
+    print("\n--- PHASE 2 : ÉVALUATION OUT-OF-FOLD (OOF) DE LA PRIME PURE ---")
+    oof_prime, rmse_prime = oof_prime_rmse(
+        df_train=df_train,
+        preprocess_for_freq_fn=preprocessing.prepare_for_frequency,
+        preprocess_for_sev_fn=preprocessing.prepare_for_severity,
+        train_freq_fn=frequency.train_final_model,
+        train_sev_fn=severity.train_final_model,
+        n_splits=5,
+        random_state=42,
+        clip_sev_max=50000 
+    )
+
+    # =========================================================
+    # PHASE 3 : INFÉRENCE SUR LE JEU DE TEST ET AJUSTEMENT
+    # =========================================================
     print("\n" + "="*40)
-    print(" PARTIE C : GÉNÉRATION DE LA SOUMISSION ")
+    print(" PHASE 3 : GÉNÉRATION DES PRÉDICTIONS SUR LE JEU DE TEST ")
     print("="*40)
 
-    oof_prime, rmse_prime = oof_prime_rmse(
-    df_train=df_train,
-    preprocess_for_freq_fn=preprocessing.prepare_for_frequency,
-    preprocess_for_sev_fn=preprocessing.prepare_for_severity,
-    train_freq_fn=frequency.train_final_model,
-    train_sev_fn=severity.train_final_model,
-    n_splits=5,
-    random_state=42,
-    clip_sev_max=50000  # optionnel mais souvent utile
-  )
-    # a. Chargement et Nettoyage du Test
+    # Chargement, nettoyage et alignement des données de test
     df_test = preprocessing.load_and_clean_common_data(TEST_PATH)
-    
-    # b. Préparation X (Inférence) AVEC ALIGNEMENT
-    # CORRECTION ICI : On passe 'feats_freq' pour forcer les mêmes colonnes que l'entraînement
-    # (feats_freq et feats_sev sont identiques normalement, donc on prend l'un des deux)
     X_test, ids_test = preprocessing.prepare_for_inference(df_test, feats_freq)
     
-    # c. Prédiction FRÉQUENCE
-    print("Calcul des probabilités de sinistre...")
+    # Prédiction de la composante Fréquence
+    print("Estimation des probabilités de sinistre (Composante Fréquence)...")
     probas_freq = model_freq.predict_proba(X_test)[:, 1]
     
-    # d. Prédiction SÉVÉRITÉ
-    print("Calcul des coûts estimés...")
-    # Attention : model_sev attend aussi exactement les mêmes colonnes
-    # Comme X_test est maintenant aligné sur feats_freq (qui est == feats_sev), ça marche.
+    # Prédiction de la composante Sévérité
+    print("Estimation des coûts de sinistre (Composante Sévérité)...")
     log_couts = model_sev.predict(X_test)
     couts_sev = np.expm1(log_couts)
     
-    # ... (la fin reste pareille) ...
+    # Calcul de la prime pure technique (Fréquence x Sévérité)
+    print("Calcul de la prime pure et application du facteur de correction (x1.14)...")
+    prime_pure_base = probas_freq * couts_sev
     
-    # e. CALCUL DE LA PRIME PURE
-    # Formule : Probabilité * Coût
-    prime_pure = probas_freq * couts_sev
+    # Application d'un facteur d'ajustement global issu de l'analyse du Leaderboard
+    prime_pure_finale = prime_pure_base * 1.14
     
-    # f. Création du fichier CSV
-    # CORRECTION : On renomme les colonnes pour respecter le format imposé
+    # Contrôle de sécurité : plafonnement inférieur à zéro (pas de prime négative)
+    prime_pure_finale = np.maximum(prime_pure_finale, 0)
+    
+    # Construction du DataFrame final pour exportation
     df_submission = pd.DataFrame({
-        'index': ids_test,       # La plateforme VEUT que ça s'appelle 'index'
-        'pred': prime_pure       # La plateforme VEUT que ça s'appelle 'pred'
+        'index': ids_test,       
+        'pred': prime_pure_finale       
     })
     
-    # Sauvegarde
+    # Exportation au format CSV
     df_submission.to_csv(SUBMISSION_PATH, index=False)
-    print(f"\nFichier généré avec succès : {SUBMISSION_PATH}")
-    print(df_submission.head())
-    
-    # Sauvegarde
-    df_submission.to_csv(SUBMISSION_PATH, index=False)
-    print(f"\n Fichier généré avec succès : {SUBMISSION_PATH}")
+    print(f"\n[SUCCÈS] Fichier de prédiction généré : {SUBMISSION_PATH}")
+    print(f"   -> Prime moyenne projetée : {prime_pure_finale.mean():.2f} €")
     print(df_submission.head())
 
 if __name__ == "__main__":

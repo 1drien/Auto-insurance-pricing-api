@@ -3,7 +3,13 @@ import xgboost as xgb
 from sklearn.model_selection import KFold
 from sklearn.metrics import mean_absolute_error, mean_squared_error
 
-# Tes paramètres stabilisés (Anti-Surapprentissage)
+# =========================================================
+# CONFIGURATION DES HYPERPARAMÈTRES
+# =========================================================
+# Paramètres du modèle XGBoost optimisés pour la régression.
+# La configuration inclut des mécanismes de régularisation 
+# (subsample, colsample_bytree, reg_alpha, reg_lambda) 
+# afin de limiter le surapprentissage (overfitting).
 PARAMS = {
     'objective': 'reg:squarederror',
     'booster': 'gbtree',
@@ -20,33 +26,42 @@ PARAMS = {
 
 def run_kfold_validation(X, y, n_splits=5):
     """
-    Lance la validation croisée (K-Fold).
-    Retourne : MAE moyen, RMSE moyen (sur le Test).
+    Évalue les performances du modèle de sévérité via une validation croisée (K-Fold).
+    
+    Paramètres :
+    - X : Matrice des variables explicatives (features).
+    - y : Vecteur de la variable cible (montants des sinistres en logarithme).
+    - n_splits : Nombre de plis pour la validation croisée.
+    
+    Retourne :
+    - La moyenne de l'Erreur Absolue Moyenne (MAE) et de la Racine de l'Erreur 
+      Quadratique Moyenne (RMSE) évaluées sur l'échelle réelle (en euros).
     """
+    # Initialisation de la validation croisée aléatoire
     kf = KFold(n_splits=5, shuffle=True, random_state=None)    
     mae_scores = []
     rmse_scores = []
 
-    print(f"--- Lancement du K-Fold ({n_splits} splits) ---")
+    print(f"Début de la validation croisée à {n_splits} plis (Composante Sévérité)...")
 
     for train_index, val_index in kf.split(X):
-        # 1. Séparation (Numpy arrays)
+        # 1. Séparation des ensembles d'apprentissage et de validation
         X_train, X_val = X[train_index], X[val_index]
         y_train, y_val = y[train_index], y[val_index]
         
-        # 2. Entraînement
+        # 2. Instanciation et entraînement du modèle sur le pli courant
         model = xgb.XGBRegressor(**PARAMS)
         model.fit(X_train, y_train)
         
-        # 3. Prédiction (Log)
+        # 3. Prédiction sur l'ensemble de validation (les prédictions sont en log)
         pred_log = model.predict(X_val)
 
-        # 4. Conversion (Log -> Euros)
-        # np.expm1 est l'inverse exact de np.log1p (équivalent à exp(x) - 1)
+        # 4. Transformation inverse (Passage de l'échelle logarithmique à l'échelle monétaire)
+        # L'utilisation de np.expm1 garantit l'inversion exacte de np.log1p
         pred_euros = np.expm1(pred_log)
         y_true_euros = np.expm1(y_val)
 
-        # 5. Scores
+        # 5. Calcul et stockage des métriques d'évaluation
         mae_scores.append(mean_absolute_error(y_true_euros, pred_euros))
         rmse_scores.append(np.sqrt(mean_squared_error(y_true_euros, pred_euros)))
 
@@ -55,10 +70,17 @@ def run_kfold_validation(X, y, n_splits=5):
 
 def train_final_model(X, y):
     """
-    Entraîne le modèle final sur 100% des données.
-    Retourne : Le modèle entraîné.
+    Entraîne le modèle de sévérité définitif sur l'intégralité du jeu de données.
+    
+    Paramètres :
+    - X : Matrice complète des variables explicatives.
+    - y : Vecteur complet de la variable cible.
+    
+    Retourne :
+    - model : L'estimateur XGBoost entraîné, prêt pour l'inférence.
     """
-    print("--- Entraînement du modèle final (Production) ---")
+    print("Entraînement du modèle final de sévérité (Mise en production)...")
     model = xgb.XGBRegressor(**PARAMS)
     model.fit(X, y)
+    
     return model
