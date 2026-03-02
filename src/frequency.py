@@ -65,21 +65,30 @@ def train_frequency_ensemble(X, y, n_folds=5):
     
     return oof_preds, brier, auc
 
-def train_final_model(X, y):
-    """
-    Entraîne le modèle final sur toutes les données.
-    Pour simplifier en production, on peut garder le meilleur des deux ou l'ensemble.
-    Ici on garde un XGBoost calibré seul pour la simplicité de l'objet final.
-    """
-    print("--- Entraînement Final Fréquence (XGBoost Calibré) ---")
+def train_final_model(X, y, calibrate=True, method="sigmoid"):
+    print("--- Entraînement Final Fréquence ---")
     ratio = (y == 0).sum() / (y == 1).sum()
-    
-    model = XGBClassifier(
-        n_estimators=354, learning_rate=0.01, max_depth=4,
-        scale_pos_weight=ratio, random_state=42, n_jobs=-1
+
+    base = XGBClassifier(
+        n_estimators=354,
+        learning_rate=0.01,
+        max_depth=4,
+        min_child_weight=7,
+        subsample=0.8,
+        colsample_bytree=0.6,
+        reg_alpha=0.1,
+        reg_lambda=10,
+        scale_pos_weight=ratio,
+        random_state=42,
+        n_jobs=-1,
+        verbosity=0
     )
-    # On calibre sur l'ensemble (cv='prefit' n'est pas possible ici sans split, 
-    # donc on refait une calibration interne ou on entraine simple)
-    # Pour faire simple : on retourne le modèle brut optimisé
+
+    if not calibrate:
+        base.fit(X, y)
+        return base
+
+    # calibration interne en CV
+    model = CalibratedClassifierCV(base, method=method, cv=5)
     model.fit(X, y)
     return model

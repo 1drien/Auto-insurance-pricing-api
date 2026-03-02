@@ -2,6 +2,7 @@ import os
 import pandas as pd
 import numpy as np
 from src import preprocessing, severity, frequency, evaluation
+from src.prime_cv import oof_prime_rmse
 
 def main():
     # --- CHEMINS ---
@@ -42,6 +43,16 @@ def main():
     print(" PARTIE C : GÉNÉRATION DE LA SOUMISSION ")
     print("="*40)
 
+    oof_prime, rmse_prime = oof_prime_rmse(
+    df_train=df_train,
+    preprocess_for_freq_fn=preprocessing.prepare_for_frequency,
+    preprocess_for_sev_fn=preprocessing.prepare_for_severity,
+    train_freq_fn=frequency.train_final_model,
+    train_sev_fn=severity.train_final_model,
+    n_splits=5,
+    random_state=42,
+    clip_sev_max=50000  # optionnel mais souvent utile
+  )
     # a. Chargement et Nettoyage du Test
     df_test = preprocessing.load_and_clean_common_data(TEST_PATH)
     
