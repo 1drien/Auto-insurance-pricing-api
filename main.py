@@ -1,6 +1,7 @@
 import os
 import pandas as pd
 import numpy as np
+import pickle  # Importation pour la sérialisation demandée 
 from sklearn.metrics import mean_squared_error, roc_auc_score
 from sklearn.model_selection import train_test_split
 from src import preprocessing, severity, frequency, evaluation, visualization
@@ -8,14 +9,22 @@ from src.prime_cv import oof_prime_rmse
 
 def main():
     # 1. CONFIGURATION
+    # Les chemins restent relatifs à l'emplacement du fichier main.py
     DATA_PATH = os.path.join("data", "train.csv")
     TEST_PATH = os.path.join("data", "test.csv") 
     PRESENTATION_DIR = "plots-presentation"
     os.makedirs(PRESENTATION_DIR, exist_ok=True)
     
-    OUTPUT_DIR = "severity_model"
+    OUTPUT_DIR = "pricing_model"
+    # Le dossier 'models' sera créé au même niveau que main.py
+    MODELS_DIR = "models" 
+    
     SUBMISSION_PATH = os.path.join(OUTPUT_DIR, "submission_final.csv") 
+    FREQ_PATH = os.path.join(OUTPUT_DIR, "prediction_frequence.csv")
+    SEV_PATH = os.path.join(OUTPUT_DIR, "prediction_severite.csv")
+    
     os.makedirs(OUTPUT_DIR, exist_ok=True)
+    os.makedirs(MODELS_DIR, exist_ok=True) # Création du dossier au même niveau que main.py
     
     print("=== DÉMARRAGE DU PIPELINE DE TARIFICATION ACTUARIELLE ===")
 
@@ -79,15 +88,40 @@ def main():
     df_submission_data = preprocessing.load_and_clean_common_data(TEST_PATH)
     X_sub, ids_sub = preprocessing.prepare_for_inference(df_submission_data, feats_f)
     
-    # On utilise le modèle entraîné pour prédire
+    # Prédictions
     p_freq = model_freq.predict_proba(X_sub)[:, 1]
     p_sev = np.expm1(model_sev.predict(X_sub))
+
+    # Sauvegarde des composantes individuelles (fichiers debug demandés)
+    pd.DataFrame({'index': ids_sub, 'probabilite_sinistre': p_freq}).to_csv(FREQ_PATH, index=False)
+    pd.DataFrame({'index': ids_sub, 'cout_moyen_estime': p_sev}).to_csv(SEV_PATH, index=False)
     
+    # Prime finale
     prime_finale = (p_freq * p_sev) * 1.18
     df_submission = pd.DataFrame({'index': ids_sub, 'pred': np.maximum(prime_finale, 0)})
     df_submission.to_csv(SUBMISSION_PATH, index=False)
+
+    # =========================================================
+    # ÉTAPE 1 INDUSTRIALISATION : SÉRIALISATION (PICKLE) 
+    # =========================================================
+    print("\n--- ÉTAPE 1 INDUSTRIALISATION : EXPORT DES MODÈLES ---")
     
-    print(f"\n[TERMINÉ] -> Fichier : {SUBMISSION_PATH}")
+    # Sauvegarde du modèle de sévérité
+    with open(os.path.join(MODELS_DIR, "model_severity.pkl"), "wb") as f:
+        pickle.dump(model_sev, f)
+        
+    # Sauvegarde du modèle de fréquence
+    with open(os.path.join(MODELS_DIR, "model_frequency.pkl"), "wb") as f:
+        pickle.dump(model_freq, f)
+        
+    # Sauvegarde des noms de variables pour l'API future
+    with open(os.path.join(MODELS_DIR, "feature_names.pkl"), "wb") as f:
+        pickle.dump(list(feats_f), f)
+
+    print(f"[INFO] Les modèles et features ont été sérialisés dans : {os.path.abspath(MODELS_DIR)}")
+    
+    print(f"\n[TERMINÉ] -> Fichier final : {SUBMISSION_PATH}")
+    print(f"-> Détails exportés : {FREQ_PATH} et {SEV_PATH}")
     print(f"-> Prime moyenne : {prime_finale.mean():.2f} €")
 
 if __name__ == "__main__":
