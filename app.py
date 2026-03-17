@@ -66,61 +66,61 @@ class PricingResponse(BaseModel):
 class InsuranceObservation(BaseModel):
     age_conducteur1: int = Field(
         ..., 
-        alias="Primary_Driver_Age", 
+        alias="primary_driver_age", 
         example=30,
         description="**Age of the main policyholder.** Must be an integer; the Age"
     )
     anciennete_permis1: int = Field(
         ..., 
-        alias="Years_of_License", 
+        alias="years_of_license", 
         example=10,
         description="**Driving experience.** Number of years since the driving license was issued"
     )
     sex_conducteur1: str = Field(
         ..., 
-        alias="Driver_Gender", 
+        alias="driver_gender", 
         example="M",
         description="**Gender of the driver.** 'M' for Male or 'F' for Female"
     )
     din_vehicule: int = Field(
         ..., 
-        alias="Engine_Horsepower", 
+        alias="engine_horsepower", 
         example=110,
         description="**Vehicle engine power (DIN hp).** Must be an integer representing the engine power of the car"
     )
     poids_vehicule: int = Field(
         ..., 
-        alias="Vehicle_Weight_KG", 
+        alias="vehicle_weight_kg", 
         example=1300,
         description="**Vehicle curb weight in kilograms.** The weight of the Car"
     )
     utilisation: str = Field(
         ..., 
-        alias="Usage_Type", 
+        alias="usage_type", 
         example="WorkPrivate",
         description="**Main use of the vehicle.** 4 Options: 'Retired', 'WorkPrivate', 'Professional', or 'AllTrips'"
     )
     marque_vehicule: str = Field(
         ..., 
-        alias="Car_Brand", 
+        alias="car_brand", 
         example="Renault",
         description="**Manufacturer brand.** The name of the Car Brand"
     )
     prix_vehicule: float = Field(
         ..., 
-        alias="Purchase_Price_EUR", 
+        alias="purchase_price_eur", 
         example=25000.0,
         description="**Market value of the car in Euros.** The price of the car in Euros"
     )
     type_vehicule: str = Field(
         ..., 
-        alias="Vehicle_Category", 
+        alias="vehicle_category", 
         example="Tourism",
         description="**Vehicle type.** 'Tourism' for Standard car or 'Commercial' for Van/Utility"
     )
     freq_paiement: str = Field(
         ..., 
-        alias="Payment_Frequency", 
+        alias="payment_frequency", 
         example="Monthly",
         description="**Premium billing cycle.** 4 Options : 'Monthly', 'Quarterly', 'Biannual' or 'Yearly'"
     )
