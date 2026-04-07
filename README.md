@@ -8,8 +8,8 @@
 Projet de Data Science et ML Engineering visant à prédire la **Prime Pure** d'assurance automobile. 
 Le projet intègre désormais une **API FastAPI** industrialisée via **Docker** et une **CI/CD GitHub Actions**.
 
-👤 **Auteur :** [@1drien](https://github.com/1drien)
-
+👤 **Auteurs :** [@1drien](https://github.com/1drien)
+* [@elkiliayma-sys](https://github.com/elkiliayma-sys)
 ---
 
 ## 📂 Architecture du projet
