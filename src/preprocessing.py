@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 
 # Configuration globale pour éviter les avertissements de types
-pd.set_option('future.no_silent_downcasting', True)
+# pd.set_option('future.no_silent_downcasting', True)
 
 def _apply_logic(df):
     """
