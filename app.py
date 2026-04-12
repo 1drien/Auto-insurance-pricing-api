@@ -66,12 +66,14 @@ class PricingResponse(BaseModel):
 class InsuranceObservation(BaseModel):
     age_conducteur1: int = Field(
         ..., 
+        ge=18,
         alias="primary_driver_age", 
         example=30,
         description="**Age of the main policyholder.** Must be an integer; the Age"
     )
     anciennete_permis1: int = Field(
         ..., 
+        ge=0,
         alias="years_of_license", 
         example=10,
         description="**Driving experience.** Number of years since the driving license was issued"
@@ -90,6 +92,7 @@ class InsuranceObservation(BaseModel):
     )
     poids_vehicule: int = Field(
         ..., 
+        ge=0,
         alias="vehicle_weight_kg", 
         example=1300,
         description="**Vehicle curb weight in kilograms.** The weight of the Car"
@@ -102,12 +105,16 @@ class InsuranceObservation(BaseModel):
     )
     marque_vehicule: str = Field(
         ..., 
+        min_length=2,      
+        max_length=50,      
+        pattern=r"^[a-zA-Z\s\-]+$",
         alias="car_brand", 
         example="Renault",
         description="**Manufacturer brand.** The name of the Car Brand"
     )
     prix_vehicule: float = Field(
         ..., 
+        ge=0,
         alias="purchase_price_eur", 
         example=25000.0,
         description="**Market value of the car in Euros.** The price of the car in Euros"

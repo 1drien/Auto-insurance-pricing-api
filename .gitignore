@@ -1,0 +1,10 @@
+# Exécutables
+*.exe
+
+# Environnement virtuel
+venv/
+.env
+
+# Cache Python
+__pycache__/
+*.pyc
