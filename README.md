@@ -9,9 +9,9 @@ Projet de Data Science et ML Engineering visant à prédire la **Prime Pure** d'
 Le projet intègre désormais une **API FastAPI** industrialisée via **Docker** et une **CI/CD GitHub Actions**.
 
 👤 **Auteurs :**
-* [@MORLET_Adrien](https://github.com/1drien)
-* [@EL_KILI_AYMAN](https://github.com/elkiliayma-sys)
-* [@LACHKAR_KIANE](https://github.com/Kiane06)
+* [@1drien](https://github.com/1drien)
+* [@elkiliayma-sys](https://github.com/elkiliayma-sys)
+* [@Kiane06](https://github.com/Kiane06)
 ---
 
 ## 📂 Architecture du projet
