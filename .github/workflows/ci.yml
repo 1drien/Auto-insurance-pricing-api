@@ -1,12 +1,12 @@
 name: Actuarial API CI/CD Pipeline
 
-# Déclenchement automatique lors d'un push ou d'une PR sur dev ou main
+# Déclenchement automatique lors d'un push sur dev ou main
 on:
   push:
     branches: [ "main", "dev" ]
   pull_request:
     branches: [ "main", "dev" ]
-
+s
 jobs:
   continuous-integration:
     runs-on: ubuntu-latest
@@ -43,7 +43,7 @@ jobs:
           pytest
 
       # 6. Création de l'image Docker (Action 5.1 du TD)
-      # Cette étape valide que ton Dockerfile est correct et fonctionnel
+      # Cette étape valide que le Dockerfile est correct et fonctionnel
       - name: Build Docker image
         run: |
           docker build -t actuarial-pricing-api:latest .

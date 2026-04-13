@@ -1,15 +1,12 @@
 import pandas as pd
 import numpy as np
 
-# Configuration globale pour éviter les avertissements de types
-# pd.set_option('future.no_silent_downcasting', True)
-
 def _apply_logic(df):
     """
     Logique interne de transformation (Feature Engineering + Nettoyage).
     Appliquée de manière identique pour le Batch et l'Unitaire[cite: 31, 33].
     """
-    # 1. INGÉNIERIE DES CARACTÉRISTIQUES (FEATURE ENGINEERING) [cite: 18]
+    # 1. INGÉNIERIE DES CARACTÉRISTIQUES (FEATURE ENGINEERING)
     if 'din_vehicule' in df.columns and 'poids_vehicule' in df.columns:
         df['ratio_puissance_poids'] = df['din_vehicule'] / (df['poids_vehicule'] + 1)
         
@@ -41,7 +38,7 @@ def _apply_logic(df):
         if col in df.columns:
             df[col] = df[col].replace(vals, codes).infer_objects(copy=False)
 
-    # 3. ENCODAGE DISJONCTIF (ONE-HOT) 
+    # 3. ENCODAGE DISJONCTIF 
     cols_to_encode = [
         'marque_vehicule', 'modele_vehicule', 'sex_conducteur2', 
         'type_contrat', 'paiement', 'conducteur2', 'essence_vehicule'
