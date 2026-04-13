@@ -8,4 +8,5 @@ venv/
 # Cache Python
 .venv/
 *.egg-info/
-.pytest_cache/
+.pytest_cache/plots-presentation/
+pricing_model/
