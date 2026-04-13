@@ -19,6 +19,17 @@ app = FastAPI(
     version="1.0.0"
 )
 
+from fastapi.middleware.cors import CORSMiddleware
+
+# Autorise ton application React à communiquer avec l'API
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Autorise tout le monde (pour les tests)
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 # 2. MODEL LOADING
 MODELS_DIR = "models"
 try:
