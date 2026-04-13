@@ -1,0 +1,33 @@
+[project]
+name = "actuarial-pricing-api"
+version = "1.0.0"
+description = "API de tarification assurance auto - M2 Fintech"
+readme = "README.md"
+requires-python = ">=3.9"
+authors = [
+    { name = "1drien" },
+    { name = "elkiliayma-sys" },
+    { name = "Kiane06" },
+]
+
+dependencies = [
+    "fastapi==0.109.0",
+    "uvicorn==0.27.0",
+    "pandas==2.1.4",
+    "numpy==1.26.3",
+    "xgboost==2.0.3",
+    "scikit-learn==1.3.2",
+    "pydantic==2.5.3",
+    "streamlit>=1.30.0",
+    "requests>=2.31.0",
+]
+
+[dependency-groups]
+dev = [
+    "pytest==7.4.4",
+    "flake8==7.0.0",
+    "pylint>=3.0.0",
+]
+
+[project.scripts]
+start-api = "uvicorn app:app --host 0.0.0.0 --port 8000"

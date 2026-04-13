@@ -1,20 +1,19 @@
-# 1. Image de base légère avec Python
 FROM python:3.9-slim
 
-# 2. Répertoire de travail dans le conteneur
 WORKDIR /app
 
-# 3. Copie du fichier de dépendances
-COPY requirements.txt .
+# Installer UV dans l'image Docker
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
-# 4. Installation des dépendances (SANS CACHE pour une image légère)
-RUN pip install --no-cache-dir -r requirements.txt
+# Copier les fichiers de dépendances d'abord (cache Docker)
+COPY pyproject.toml uv.lock ./
 
-# 5. Copie de TOUT le projet (app.py, src/, models/, data/, tests/)
+# Installer seulement les dépendances de prod
+RUN uv sync --no-dev --frozen
+
+# Copier le reste du projet
 COPY . .
 
-# 6. Exposition du port 8000
 EXPOSE 8000
 
-# 7. Commande pour lancer l'API (Uvicorn)
-CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uv", "run", "uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
