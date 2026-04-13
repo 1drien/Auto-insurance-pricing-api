@@ -6,7 +6,7 @@ on:
     branches: [ "main", "dev" ]
   pull_request:
     branches: [ "main", "dev" ]
-s
+
 jobs:
   continuous-integration:
     runs-on: ubuntu-latest
