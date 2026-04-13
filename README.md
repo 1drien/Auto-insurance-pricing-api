@@ -11,6 +11,7 @@ Le projet intègre désormais une **API FastAPI** industrialisée via **Docker**
 👤 **Auteurs :**
 * [@1drien](https://github.com/1drien)
 * [@elkiliayma-sys](https://github.com/elkiliayma-sys)
+* [@Kiane06](https://github.com/Kiane06)
 ---
 
 ## 📂 Architecture du projet

@@ -7,7 +7,7 @@ from src.preprocessing import preprocess_single_event
 
 # 1. API INITIALIZATION
 app = FastAPI(
-    title="Actuarial Pricing API - M2 FINTECH",
+    title="Actuarial Pricing API",
     description=(
         "### Industrialized Insurance Pricing Solution\n"
         "This API provides real-time insurance premium calculations based on two Machine Learning models.\n\n"

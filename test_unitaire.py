@@ -47,7 +47,7 @@ def run_manual_test():
     log_montant = model_s.predict(X_input)
     montant_estime = np.expm1(log_montant)[0]
 
-    # Calcul de la prime (formule agrégée) [cite: 15]
+    # Calcul de la prime
     prime_technique = prob_sinistre * montant_estime
     prime_finale = prime_technique * 1.18
 

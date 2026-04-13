@@ -3,12 +3,11 @@ import xgboost as xgb
 from sklearn.model_selection import KFold
 from sklearn.metrics import mean_absolute_error, mean_squared_error
 
-# =========================================================
+
 # CONFIGURATION DES HYPERPARAMÈTRES
-# =========================================================
+
 # Paramètres du modèle XGBoost optimisés pour la régression.
 # La configuration inclut des mécanismes de régularisation 
-# (subsample, colsample_bytree, reg_alpha, reg_lambda) 
 # afin de limiter le surapprentissage (overfitting).
 PARAMS = {
     'objective': 'reg:squarederror',

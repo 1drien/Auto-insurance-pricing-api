@@ -101,9 +101,9 @@ def main():
     df_submission = pd.DataFrame({'index': ids_sub, 'pred': np.maximum(prime_finale, 0)})
     df_submission.to_csv(SUBMISSION_PATH, index=False)
 
-    # =========================================================
+    
     # ÉTAPE 1 INDUSTRIALISATION : SÉRIALISATION (PICKLE) 
-    # =========================================================
+    
     print("\n--- ÉTAPE 1 INDUSTRIALISATION : EXPORT DES MODÈLES ---")
     
     # Sauvegarde du modèle de sévérité
