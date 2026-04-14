@@ -5,9 +5,10 @@ from numpy.typing import NDArray
 
 def _apply_logic(df: pd.DataFrame) -> pd.DataFrame:
     """
-    Logique interne de transformation (Feature Engineering + Nettoyage).
-    Appliquée de manière identique pour le Batch et l'Unitaire.
+    Internal transformation logic (Feature Engineering + Cleaning).
+    Applied identically for both batch and single-event processing.
     """
+    # 1. FEATURE ENGINEERING
     if 'din_vehicule' in df.columns and 'poids_vehicule' in df.columns:
         df['ratio_puissance_poids'] = df['din_vehicule'] / (df['poids_vehicule'] + 1)
 
@@ -23,9 +24,11 @@ def _apply_logic(df: pd.DataFrame) -> pd.DataFrame:
     if 'prix_vehicule' in df.columns:
         df['log_prix_vehicule'] = np.log1p(df['prix_vehicule'])
 
+    # 2. CLEANING AND ENCODING
     if 'sex_conducteur2' in df.columns:
         df['sex_conducteur2'] = df['sex_conducteur2'].fillna('NoDriver')
 
+    # Manual ordinal encoding
     mappings: dict[str, tuple[list, list]] = {
         'sex_conducteur1': (['M', 'F'], [0, 1]),
         'type_vehicule': (['Tourism', 'Commercial'], [0, 1]),
@@ -37,73 +40,74 @@ def _apply_logic(df: pd.DataFrame) -> pd.DataFrame:
         if col in df.columns:
             df[col] = df[col].replace(vals, codes).infer_objects(copy=False)
 
+    # 3. ONE-HOT ENCODING
     cols_to_encode: list[str] = [
         'marque_vehicule', 'modele_vehicule', 'sex_conducteur2',
         'type_contrat', 'paiement', 'conducteur2', 'essence_vehicule'
     ]
-    exist_cols = [c for c in cols_to_encode if c in df.columns]
+    exist_cols: list[str] = [c for c in cols_to_encode if c in df.columns]
     df = pd.get_dummies(df, columns=exist_cols, dtype=int)
 
     return df
 
 
 def load_and_clean_common_data(filepath: str) -> pd.DataFrame:
-    """Charge un CSV et applique la logique de nettoyage."""
-    print(f"Chargement des données : {filepath}")
-    df = pd.read_csv(filepath)
+    """Loads a CSV file and applies the cleaning logic."""
+    print(f"Loading data: {filepath}")
+    df: pd.DataFrame = pd.read_csv(filepath)
     return _apply_logic(df)
 
 
 def preprocess_single_event(data_dict: dict, model_features: list[str]) -> NDArray:
     """
-    Transforme un dictionnaire JSON en vecteur NumPy pour l'API.
+    Transforms a JSON dictionary into a NumPy vector for the API.
 
     Args:
-        data_dict: Dictionnaire contenant les données d'une observation.
-        model_features: Liste des noms de colonnes attendus par le modèle.
+        data_dict: Dictionary containing a single observation's data.
+        model_features: List of column names expected by the model.
 
     Returns:
-        Matrice NumPy de shape (1, n_features) alignée sur le modèle.
+        NumPy array of shape (1, n_features) aligned with the model.
     """
-    df = pd.DataFrame([data_dict])
-    df_processed = _apply_logic(df)
-    df_aligned = df_processed.reindex(columns=model_features, fill_value=0)
+    df: pd.DataFrame = pd.DataFrame([data_dict])
+    df_processed: pd.DataFrame = _apply_logic(df)
+    df_aligned: pd.DataFrame = df_processed.reindex(columns=model_features, fill_value=0)
     return df_aligned.values
 
 
 def prepare_for_severity(df: pd.DataFrame) -> tuple[NDArray, NDArray, pd.Index]:
-    """Prépare la matrice pour le modèle Sévérité."""
-    df_sev = df[df['nombre_sinistres'] > 0].copy()
-    y = np.log1p(df_sev['montant_sinistre']).values
+    """Prepares the feature matrix for the Severity model."""
+    df_sev: pd.DataFrame = df[df['nombre_sinistres'] > 0].copy()
+    y: NDArray = np.log1p(df_sev['montant_sinistre']).values
 
     cols_to_drop: list[str] = [
         'montant_sinistre', 'nombre_sinistres',
         'id_contrat', 'id_client', 'id_vehicule', 'code_postal', 'index'
     ]
-    X_df = df_sev.drop(columns=cols_to_drop, errors='ignore')
+    X_df: pd.DataFrame = df_sev.drop(columns=cols_to_drop, errors='ignore')
     return X_df.values, y, X_df.columns
 
 
 def prepare_for_frequency(df: pd.DataFrame) -> tuple[NDArray, NDArray, pd.Index]:
-    """Prépare la matrice pour le modèle Fréquence."""
-    y = (df['nombre_sinistres'] > 0).astype(int).values
+    """Prepares the feature matrix for the Frequency model."""
+    y: NDArray = (df['nombre_sinistres'] > 0).astype(int).values
 
     cols_to_drop: list[str] = [
         'montant_sinistre', 'nombre_sinistres',
         'id_contrat', 'id_client', 'id_vehicule', 'code_postal', 'index'
     ]
-    X_df = df.drop(columns=cols_to_drop, errors='ignore')
+    X_df: pd.DataFrame = df.drop(columns=cols_to_drop, errors='ignore')
     return X_df.values, y, X_df.columns
 
 
 def prepare_for_inference(df: pd.DataFrame, model_features: list[str]) -> tuple[NDArray, NDArray]:
-    """Alignement pour l'inférence batch classique."""
+    """Aligns columns for batch inference."""
     if 'id_contrat' in df.columns:
-        ids = df['id_contrat'].values
+        ids: NDArray = df['id_contrat'].values
     elif 'index' in df.columns:
         ids = df['index'].values
     else:
         ids = df.iloc[:, 0].values
 
-    df_aligned = df.reindex(columns=model_features, fill_value=0)
+    df_aligned: pd.DataFrame = df.reindex(columns=model_features, fill_value=0)
     return df_aligned.values, ids
