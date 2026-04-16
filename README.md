@@ -1,4 +1,4 @@
-# Actuarial Pricing API — Assurance Auto
+# Actuarial Pricing API — Auto Insurance
 
 ![Python](https://img.shields.io/badge/Python-3.11-blue)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.109-009688)
@@ -6,100 +6,100 @@
 ![Docker](https://img.shields.io/badge/Docker-Ready-2496ED)
 ![CI/CD](https://img.shields.io/badge/CI%2FCD-GitHub%20Actions-success)
 
-API de tarification assurance automobile basée sur deux modèles de Machine Learning (fréquence + sévérité). Ce projet industrialise des modèles développés en notebook pour les exposer via une API REST, avec conteneurisation Docker et intégration continue.
+REST API for auto insurance pricing based on two Machine Learning models (frequency + severity). This project industrializes models developed in notebooks and exposes them via a REST API, with Docker containerization and continuous integration.
 
-**Auteurs :** [@1drien](https://github.com/1drien) · [@elkiliayma-sys](https://github.com/elkiliayma-sys) · [@Kiane06](https://github.com/Kiane06)
-
----
-
-## Principe de tarification
-
-La prime d'assurance est calculée selon la formule actuarielle :
-
-```
-Prime TTC = P(sinistre) × Coût moyen du sinistre × 1.18
-```
-
-Deux modèles ML interviennent :
-- **Modèle de fréquence** — Ensemble XGBoost + HistGradientBoosting avec calibration isotonique. Prédit la probabilité qu'un assuré ait au moins un sinistre.
-- **Modèle de sévérité** — XGBoost régresseur entraîné en échelle logarithmique. Prédit le coût moyen si un sinistre survient.
-
-Les modèles sont entraînés via `main.py`, sérialisés avec pickle dans `models/`, puis chargés par l'API au démarrage.
+**Authors:** [@1drien](https://github.com/1drien) · [@elkiliayma-sys](https://github.com/elkiliayma-sys) · [@Kiane06](https://github.com/Kiane06)
 
 ---
 
-## Architecture du projet
+## Pricing Principle
+
+The insurance premium is calculated using the actuarial formula:
+
+```
+Final Premium (incl. tax) = P(claim) × Average claim cost × 1.18
+```
+
+Two ML models are involved:
+- **Frequency model** — XGBoost + HistGradientBoosting ensemble with isotonic calibration. Predicts the probability that a policyholder will have at least one claim.
+- **Severity model** — XGBoost regressor trained on a log scale. Predicts the average cost if a claim occurs.
+
+Models are trained via `main.py`, serialized with pickle into `models/`, then loaded by the API at startup.
+
+---
+
+## Project Architecture
 
 ```
 .
-├── .github/workflows/ci.yml   # Pipeline CI/CD GitHub Actions
-├── app.py                     # API FastAPI (4 routes)
-├── interface.py               # Interface Streamlit (client web)
-├── main.py                    # Pipeline d'entraînement des modèles
-├── conftest.py                # Configuration pytest
-├── Dockerfile                 # Image Docker de production
-├── pyproject.toml             # Dépendances et métadonnées (UV)
-├── uv.lock                    # Versions figées des dépendances
+├── .github/workflows/ci.yml   # CI/CD GitHub Actions pipeline
+├── app.py                     # FastAPI application (4 routes)
+├── interface.py               # Streamlit interface (web client)
+├── main.py                    # Model training pipeline
+├── conftest.py                # Pytest configuration
+├── Dockerfile                 # Production Docker image
+├── pyproject.toml             # Dependencies and metadata (UV)
+├── uv.lock                    # Pinned dependency versions
 ├── models/
-│   ├── model_frequency.pkl    # Modèle de fréquence sérialisé
-│   ├── model_severity.pkl     # Modèle de sévérité sérialisé
-│   └── feature_names.pkl      # Noms des features pour l'alignement
+│   ├── model_frequency.pkl    # Serialized frequency model
+│   ├── model_severity.pkl     # Serialized severity model
+│   └── feature_names.pkl      # Feature names for alignment
 ├── src/
-│   ├── preprocessing.py       # Feature engineering + traitement unitaire
-│   ├── frequency.py           # Définition du modèle de fréquence
-│   ├── severity.py            # Définition du modèle de sévérité
-│   ├── prime_cv.py            # Validation croisée Out-Of-Fold
-│   ├── evaluation.py          # Métriques et diagnostics
-│   └── visualization.py       # Graphiques d'analyse
+│   ├── preprocessing.py       # Feature engineering + unit processing
+│   ├── frequency.py           # Frequency model definition
+│   ├── severity.py            # Severity model definition
+│   ├── prime_cv.py            # Out-Of-Fold cross-validation
+│   ├── evaluation.py          # Metrics and diagnostics
+│   └── visualization.py       # Analysis charts
 ├── tests/
-│   ├── test_api.py            # Tests des 4 routes API + validation
-│   └── test_preprocessing.py  # Tests du preprocessing unitaire
+│   ├── test_api.py            # Tests for all 4 API routes + validation
+│   └── test_preprocessing.py  # Unit tests for preprocessing
 ├── data/
-│   ├── train.csv              # Données d'entraînement
-│   └── test.csv               # Données de test
+│   ├── train.csv              # Training data
+│   └── test.csv               # Test data
 └── notebooks/
-    └── eda_preprocessing.ipynb # Exploration et développement
+    └── eda_preprocessing.ipynb # Exploration and development
 ```
 
 ---
 
-## Installation et lancement
+## Installation & Setup
 
-### Prérequis
+### Prerequisites
 
 - Python ≥ 3.11
-- [UV](https://docs.astral.sh/uv/) (gestionnaire de dépendances)
+- [UV](https://docs.astral.sh/uv/) (dependency manager)
 
 ### Installation
 
 ```bash
-# Installer UV
+# Install UV
 curl -LsSf https://astral.sh/uv/install.sh | sh
 source $HOME/.local/bin/env
 
-# Cloner le projet
+# Clone the repository
 git clone https://github.com/1drien/Prediction-du-Montant-des-Sinistres.git
 cd Prediction-du-Montant-des-Sinistres
 
-# Installer les dépendances
+# Install dependencies
 uv sync
 ```
 
-### Lancer l'API
+### Run the API
 
 ```bash
 uv run uvicorn app:app --reload
 ```
 
-L'API est accessible sur `http://127.0.0.1:8000`. La documentation Swagger est sur `http://127.0.0.1:8000/docs`.
+The API is available at `http://127.0.0.1:8000`. Swagger documentation is at `http://127.0.0.1:8000/docs`.
 
-### Lancer l'interface Streamlit
+### Run the Streamlit Interface
 
 ```bash
 uv run streamlit run interface.py
 ```
 
-### Lancer les tests
+### Run Tests
 
 ```bash
 uv run pytest tests/ -v
@@ -107,16 +107,16 @@ uv run pytest tests/ -v
 
 ---
 
-## Routes de l'API
+## API Routes
 
-| Méthode | Route | Description |
-|---------|-------|-------------|
-| GET | `/health` | Vérifie l'état de santé de l'API |
-| POST | `/predict_frequency` | Prédit la probabilité de sinistre |
-| POST | `/predict_amount` | Prédit le coût moyen d'un sinistre |
-| POST | `/predict` | Calcule la prime complète (fréquence × sévérité × 1.18) |
+| Method | Route | Description |
+|--------|-------|-------------|
+| GET | `/health` | Check API health status |
+| POST | `/predict_frequency` | Predict claim probability |
+| POST | `/predict_amount` | Predict average claim cost |
+| POST | `/predict` | Calculate full premium (frequency × severity × 1.18) |
 
-### Exemple de requête
+### Example Request
 
 ```bash
 curl -X POST http://127.0.0.1:8000/predict \
@@ -135,7 +135,7 @@ curl -X POST http://127.0.0.1:8000/predict \
   }'
 ```
 
-### Exemple de réponse
+### Example Response
 
 ```json
 {
@@ -151,10 +151,10 @@ curl -X POST http://127.0.0.1:8000/predict \
 ## Docker
 
 ```bash
-# Construire l'image
+# Build the image
 docker build -t actuarial-pricing-api .
 
-# Lancer le conteneur
+# Run the container
 docker run -p 8000:8000 actuarial-pricing-api
 ```
 
@@ -162,33 +162,33 @@ docker run -p 8000:8000 actuarial-pricing-api
 
 ## CI/CD
 
-Le pipeline GitHub Actions (`.github/workflows/ci.yml`) s'exécute automatiquement à chaque push sur `main` ou `dev` :
+The GitHub Actions pipeline (`.github/workflows/ci.yml`) runs automatically on every push to `main` or `dev`:
 
-1. **Installation** — UV + dépendances
-2. **Lint** — Flake8 (qualité du code)
-3. **Tests** — Pytest (8 tests : preprocessing + routes API)
-4. **Docker** — Validation du build de l'image
-
----
-
-## Gestion des dépendances
-
-Le projet utilise **UV** au lieu de pip/requirements.txt :
-
-- `pyproject.toml` — décrit le projet et sépare dépendances de production et de développement
-- `uv.lock` — fige les versions exactes pour garantir la reproductibilité
-- `uv sync` — installe l'environnement, `uv run` — exécute dans l'environnement virtuel
+1. **Install** — UV + dependencies
+2. **Lint** — Flake8 (code quality)
+3. **Tests** — Pytest (8 tests: preprocessing + API routes)
+4. **Docker** — Image build validation
 
 ---
 
-## Stack technique
+## Dependency Management
+
+This project uses **UV** instead of pip/requirements.txt:
+
+- `pyproject.toml` — describes the project and separates production from development dependencies
+- `uv.lock` — pins exact versions for reproducibility
+- `uv sync` — installs the environment; `uv run` — executes within the virtual environment
+
+---
+
+## Tech Stack
 
 - **API** — FastAPI + Uvicorn
 - **ML** — scikit-learn 1.8, XGBoost 2.1
-- **Validation** — Pydantic (schémas input/output + documentation Swagger auto-générée)
+- **Validation** — Pydantic (input/output schemas + auto-generated Swagger docs)
 - **Interface** — Streamlit
-- **Dépendances** — UV (pyproject.toml + uv.lock)
-- **Conteneurisation** — Docker
+- **Dependencies** — UV (pyproject.toml + uv.lock)
+- **Containerization** — Docker
 - **CI/CD** — GitHub Actions
 - **Tests** — Pytest (8 tests)
-- **Qualité** — Flake8
+- **Code quality** — Flake8
