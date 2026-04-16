@@ -1,12 +1,25 @@
 # Exécutables
 *.exe
 
-# Environnement virtuel
-venv/
-.env
-
 # Cache Python
 .venv/
 *.egg-info/
 .pytest_cache/plots-presentation/
 pricing_model/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+venv/
+.env
+
+# Outputs & données
+pricing_model/
+data/
+
+# IDE
+.vscode/
+.idea/
