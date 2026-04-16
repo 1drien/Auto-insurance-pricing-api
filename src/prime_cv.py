@@ -1,6 +1,4 @@
-# =========================================================
 # MODULE DE VALIDATION CROISÉE POUR L'ESTIMATION DE LA PRIME PURE
-# =========================================================
 
 import numpy as np
 from sklearn.model_selection import StratifiedKFold
@@ -38,7 +36,7 @@ def oof_prime_rmse(
     """
 
     # Définition de la variable de stratification (présence ou absence de sinistre)
-    # Cela garantit une répartition équitable des sinistres dans chaque pli (fold).
+    # Cela garantit une répartition équitable des sinistres dans chaque fold.
     y_freq_full = (df_train["nombre_sinistres"] > 0).astype(int).values
 
     # Initialisation de la validation croisée stratifiée
@@ -60,9 +58,7 @@ def oof_prime_rmse(
         df_tr = df_train.iloc[tr_idx].copy()
         df_va = df_train.iloc[va_idx].copy()
 
-        # =========================================================
         # COMPOSANTE 1 : MODÉLISATION DE LA FRÉQUENCE
-        # =========================================================
         
         # Préparation des données d'apprentissage pour la fréquence
         X_tr_f, y_tr_f, feats_f = preprocess_for_freq_fn(df_tr)
@@ -80,9 +76,7 @@ def oof_prime_rmse(
         model_f = train_freq_fn(X_tr_f, y_tr_f)
         p_va = model_f.predict_proba(X_va_f)[:, 1]
 
-        # =========================================================
         # COMPOSANTE 2 : MODÉLISATION DE LA SÉVÉRITÉ
-        # =========================================================
         
         # L'entraînement s'effectue exclusivement sur la population sinistrée
         X_tr_s, y_tr_s, feats_s = preprocess_for_sev_fn(df_tr)
@@ -108,10 +102,7 @@ def oof_prime_rmse(
             log_cost_va = model_s.predict(X_va_s)
             cost_va = np.expm1(log_cost_va)
 
-        # =========================================================
-        # CALCUL DE LA PRIME PURE ET ÉVALUATION
-        # =========================================================
-        
+        # CALCUL DE LA PRIME PURE ET ÉVALUATION      
         # Plafonnement optionnel pour limiter l'impact des valeurs extrêmes (outliers)
         if clip_sev_max is not None:
             cost_va = np.clip(cost_va, 0, clip_sev_max)

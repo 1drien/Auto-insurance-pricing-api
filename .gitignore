@@ -1,0 +1,12 @@
+# Exécutables
+*.exe
+
+# Environnement virtuel
+venv/
+.env
+
+# Cache Python
+.venv/
+*.egg-info/
+.pytest_cache/plots-presentation/
+pricing_model/

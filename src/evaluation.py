@@ -1,6 +1,4 @@
-# =========================================================
 # MODULE D'ÉVALUATION ET DE DIAGNOSTIC DES MODÈLES
-# =========================================================
 
 import matplotlib.pyplot as plt
 from sklearn.calibration import calibration_curve
@@ -33,7 +31,7 @@ def plot_feature_importance(model, feature_names, save_path):
     plt.figure(figsize=(10, 8))
     
     # importance_type='weight' : Mesure l'importance par la fréquence d'utilisation 
-    # de la variable comme critère de scission (split) dans l'ensemble des arbres.
+    # de la variable comme critère de split dans l'ensemble des arbres.
     xgb.plot_importance(
         model, 
         max_num_features=15, 
