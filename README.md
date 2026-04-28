@@ -1,9 +1,12 @@
 <div align="center">
 
-<img src="https://capsule-render.vercel.app/api?type=waving&color=0:1a1a2e,50:16213e,100:0f3460&height=200&section=header&text=Actuarial%20Pricing%20API&fontSize=42&fontColor=e94560&animation=fadeIn&fontAlignY=38&desc=Auto%20Insurance%20%7C%20ML-powered%20Premium%20Calculation&descAlignY=58&descColor=a8b2d8" width="100%"/>
+<img src="https://capsule-render.vercel.app/api?type=venom&color=0:0d0221,30:0a1628,60:1a0533,100:2d1b69&height=280&section=header&text=Actuarial%20Pricing%20API&fontSize=52&fontColor=00d4ff&animation=fadeIn&fontAlignY=40&desc=⚡%20ML-Powered%20Auto%20Insurance%20Premium%20Engine%20⚡&descAlignY=62&descColor=bd93f9&stroke=00d4ff&strokeWidth=2" width="100%"/>
 
 <br/>
 
+<img src="https://readme-typing-svg.demolab.com?font=JetBrains+Mono&weight=700&size=22&pause=1000&color=00D4FF&center=true&vCenter=true&width=700&lines=Frequency+%C3%97+Severity+%C3%97+1.18+%3D+Final+Premium;XGBoost+%2B+HistGradientBoosting+Ensemble;FastAPI+%7C+Docker+%7C+GitHub+Actions+CI%2FCD;Built+by+%401drien+%C2%B7+%40elkiliayma-sys+%C2%B7+%40Kiane06" alt="Typing SVG" />
+
+<br/><br/>
 [![Python](https://img.shields.io/badge/Python-3.11-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.109-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
 [![scikit-learn](https://img.shields.io/badge/scikit--learn-1.8-F7931E?style=for-the-badge&logo=scikit-learn&logoColor=white)](https://scikit-learn.org)
@@ -237,6 +240,6 @@ This project uses **UV** instead of pip/requirements.txt:
 
 <div align="center">
 
-<img src="https://capsule-render.vercel.app/api?type=waving&color=0:0f3460,50:16213e,100:1a1a2e&height=100&section=footer" width="100%"/>
+<img src="https://capsule-render.vercel.app/api?type=venom&color=0:2d1b69,50:1a0533,100:0d0221&height=140&section=footer&text=Made%20with%20%E2%9D%A4%EF%B8%8F%20%26%20XGBoost&fontSize=24&fontColor=00d4ff&animation=twinkling&desc=@1drien%20·%20@elkiliayma-sys%20·%20@Kiane06&descColor=bd93f9&descAlignY=72" width="100%"/>
 
 </div>
