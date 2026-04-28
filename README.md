@@ -1,3 +1,9 @@
+<div align="center">
+
+<img src="https://capsule-render.vercel.app/api?type=waving&color=0:1a1a2e,50:16213e,100:0f3460&height=200&section=header&text=Actuarial%20Pricing%20API&fontSize=42&fontColor=e94560&animation=fadeIn&fontAlignY=38&desc=Auto%20Insurance%20%7C%20ML-powered%20Premium%20Calculation&descAlignY=58&descColor=a8b2d8" width="100%"/>
+
+<br/>
+
 # Actuarial Pricing API — Auto Insurance
 
 ![Python](https://img.shields.io/badge/Python-3.11-blue)
