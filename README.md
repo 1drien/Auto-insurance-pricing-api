@@ -4,37 +4,51 @@
 
 <br/>
 
-# Actuarial Pricing API — Auto Insurance
+[![Python](https://img.shields.io/badge/Python-3.11-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.109-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
+[![scikit-learn](https://img.shields.io/badge/scikit--learn-1.8-F7931E?style=for-the-badge&logo=scikit-learn&logoColor=white)](https://scikit-learn.org)
+[![XGBoost](https://img.shields.io/badge/XGBoost-2.1-189AB4?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0id2hpdGUiIGQ9Ik0xMiAyQzYuNDggMiAyIDYuNDggMiAxMnM0LjQ4IDEwIDEwIDEwIDEwLTQuNDggMTAtMTBTMTcuNTIgMiAxMiAyeiIvPjwvc3ZnPg==)](https://xgboost.readthedocs.io)
+[![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://docker.com)
+[![GitHub Actions](https://img.shields.io/badge/CI%2FCD-GitHub%20Actions-2088FF?style=for-the-badge&logo=github-actions&logoColor=white)](https://github.com/features/actions)
+[![UV](https://img.shields.io/badge/UV-Package%20Manager-7C3AED?style=for-the-badge&logo=astral&logoColor=white)](https://docs.astral.sh/uv/)
 
-![Python](https://img.shields.io/badge/Python-3.11-blue)
-![FastAPI](https://img.shields.io/badge/FastAPI-0.109-009688)
-![UV](https://img.shields.io/badge/UV-Package%20Manager-blueviolet)
-![Docker](https://img.shields.io/badge/Docker-Ready-2496ED)
-![CI/CD](https://img.shields.io/badge/CI%2FCD-GitHub%20Actions-success)
+<br/>
 
-REST API for auto insurance pricing based on two Machine Learning models (frequency + severity). This project industrializes models developed in notebooks and exposes them via a REST API, with Docker containerization and continuous integration.
+> **REST API for auto insurance pricing** based on two Machine Learning models (frequency + severity).  
+> Industrializes notebook models into a production-ready REST API with Docker & CI/CD.
 
-**Authors:** [@1drien](https://github.com/1drien) · [@elkiliayma-sys](https://github.com/elkiliayma-sys) · [@Kiane06](https://github.com/Kiane06)
+<br/>
+
+**Authors**
+
+[![1drien](https://img.shields.io/badge/@1drien-181717?style=flat-square&logo=github&logoColor=white)](https://github.com/1drien)
+[![elkiliayma-sys](https://img.shields.io/badge/@elkiliayma--sys-181717?style=flat-square&logo=github&logoColor=white)](https://github.com/elkiliayma-sys)
+[![Kiane06](https://img.shields.io/badge/@Kiane06-181717?style=flat-square&logo=github&logoColor=white)](https://github.com/Kiane06)
+
+</div>
 
 ---
 
-## Pricing Principle
+##  Pricing Principle
 
-The insurance premium is calculated using the actuarial formula:
+<div align="center">
 
 ```
 Final Premium (incl. tax) = P(claim) × Average claim cost × 1.18
 ```
 
-Two ML models are involved:
-- **Frequency model** — XGBoost + HistGradientBoosting ensemble with isotonic calibration. Predicts the probability that a policyholder will have at least one claim.
-- **Severity model** — XGBoost regressor trained on a log scale. Predicts the average cost if a claim occurs.
+</div>
+
+| Model | Algorithm | Role |
+|-------|-----------|------|
+|  **Frequency** | XGBoost + HistGradientBoosting + Isotonic Calibration | Predicts P(at least one claim) |
+|  **Severity** | XGBoost Regressor (log scale) | Predicts average cost if claim occurs |
 
 Models are trained via `main.py`, serialized with pickle into `models/`, then loaded by the API at startup.
 
 ---
 
-## Project Architecture
+##  Project Architecture
 
 ```
 .
@@ -69,12 +83,12 @@ Models are trained via `main.py`, serialized with pickle into `models/`, then lo
 
 ---
 
-## Installation & Setup
+##  Installation & Setup
 
 ### Prerequisites
 
-- Python ≥ 3.11
-- [UV](https://docs.astral.sh/uv/) (dependency manager)
+![Python](https://img.shields.io/badge/Python-≥3.11-3776AB?style=flat-square&logo=python&logoColor=white)
+![UV](https://img.shields.io/badge/UV-required-7C3AED?style=flat-square)
 
 ### Installation
 
@@ -97,7 +111,7 @@ uv sync
 uv run uvicorn app:app --reload
 ```
 
-The API is available at `http://127.0.0.1:8000`. Swagger documentation is at `http://127.0.0.1:8000/docs`.
+> API available at `http://127.0.0.1:8000` · Swagger docs at `http://127.0.0.1:8000/docs`
 
 ### Run the Streamlit Interface
 
@@ -113,14 +127,14 @@ uv run pytest tests/ -v
 
 ---
 
-## API Routes
+##  API Routes
 
 | Method | Route | Description |
 |--------|-------|-------------|
-| GET | `/health` | Check API health status |
-| POST | `/predict_frequency` | Predict claim probability |
-| POST | `/predict_amount` | Predict average claim cost |
-| POST | `/predict` | Calculate full premium (frequency × severity × 1.18) |
+| `GET` | `/health` | Check API health status |
+| `POST` | `/predict_frequency` | Predict claim probability |
+| `POST` | `/predict_amount` | Predict average claim cost |
+| `POST` | `/predict` | Calculate full premium (frequency × severity × 1.18) |
 
 ### Example Request
 
@@ -154,7 +168,7 @@ curl -X POST http://127.0.0.1:8000/predict \
 
 ---
 
-## Docker
+##  Docker
 
 ```bash
 # Build the image
@@ -166,35 +180,63 @@ docker run -p 8000:8000 actuarial-pricing-api
 
 ---
 
-## CI/CD
+##  CI/CD
 
 The GitHub Actions pipeline (`.github/workflows/ci.yml`) runs automatically on every push to `main` or `dev`:
 
-1. **Install** — UV + dependencies
-2. **Lint** — Flake8 (code quality)
-3. **Tests** — Pytest (8 tests: preprocessing + API routes)
-4. **Docker** — Image build validation
+```
+Push to main/dev
+      │
+      ▼
+ 1. Install ──► UV + dependencies
+      │
+      ▼
+ 2. Lint ────► Flake8 (code quality)
+      │
+      ▼
+ 3. Tests ───► Pytest (8 tests: preprocessing + API routes)
+      │
+      ▼
+ 4. Docker ──► Image build validation
+```
 
 ---
 
-## Dependency Management
+##  Dependency Management
 
 This project uses **UV** instead of pip/requirements.txt:
 
-- `pyproject.toml` — describes the project and separates production from development dependencies
-- `uv.lock` — pins exact versions for reproducibility
-- `uv sync` — installs the environment; `uv run` — executes within the virtual environment
+| File | Role |
+|------|------|
+| `pyproject.toml` | Project description, separates prod vs dev dependencies |
+| `uv.lock` | Pins exact versions for full reproducibility |
+| `uv sync` | Installs the environment |
+| `uv run` | Executes within the virtual environment |
 
 ---
 
-## Tech Stack
+##  Tech Stack
 
-- **API** — FastAPI + Uvicorn
-- **ML** — scikit-learn 1.8, XGBoost 2.1
-- **Validation** — Pydantic (input/output schemas + auto-generated Swagger docs)
-- **Interface** — Streamlit
-- **Dependencies** — UV (pyproject.toml + uv.lock)
-- **Containerization** — Docker
-- **CI/CD** — GitHub Actions
-- **Tests** — Pytest (8 tests)
-- **Code quality** — Flake8
+<div align="center">
+
+| Layer | Technology |
+|-------|-----------|
+| **API** | FastAPI + Uvicorn |
+| **ML** | scikit-learn 1.8 · XGBoost 2.1 |
+| **Validation** | Pydantic (schemas + auto Swagger) |
+| **Interface** | Streamlit |
+| **Dependencies** | UV (pyproject.toml + uv.lock) |
+| **Containerization** | Docker |
+| **CI/CD** | GitHub Actions |
+| **Tests** | Pytest (8 tests) |
+| **Code quality** | Flake8 |
+
+</div>
+
+---
+
+<div align="center">
+
+<img src="https://capsule-render.vercel.app/api?type=waving&color=0:0f3460,50:16213e,100:1a1a2e&height=100&section=footer" width="100%"/>
+
+</div>
