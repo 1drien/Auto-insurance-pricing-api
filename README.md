@@ -4,7 +4,7 @@
 
 <br/>
 
-<img src="https://readme-typing-svg.demolab.com?font=JetBrains+Mono&weight=700&size=22&pause=1000&color=00D4FF&center=true&vCenter=true&width=700&lines=Frequency+%C3%97+Severity+%C3%97+%3D+Final+Premium;XGBoost+%2B+HistGradientBoosting+Ensemble;FastAPI+%7C+Docker+%7C+GitHub+Actions+CI%2FCD;Built+by+%401drien+%C2%B7+%40elkiliayma-sys+%C2%B7+%40Kiane06" alt="Typing SVG" />
+<img src="https://readme-typing-svg.demolab.com?font=JetBrains+Mono&weight=700&size=22&pause=1000&color=00D4FF&center=true&vCenter=true&width=700&lines=Frequency+%C3%97+Severity+%3D+Final+Premium;XGBoost+%2B+HistGradientBoosting+Ensemble;FastAPI+%7C+Docker+%7C+GitHub+Actions+CI%2FCD;Built+by+%401drien+%C2%B7+%40elkiliayma-sys+%C2%B7+%40Kiane06" alt="Typing SVG" />
 
 <br/><br/>
 
@@ -49,7 +49,7 @@
 <tr>
 <td align="center" width="50%">
 
-###  Frequency Model
+### 🎯 Frequency Model
 `XGBoost` + `HistGradientBoosting`
 Ensemble + Isotonic Calibration
 **→ P(au moins un sinistre)**
@@ -57,7 +57,7 @@ Ensemble + Isotonic Calibration
 </td>
 <td align="center" width="50%">
 
-###  Severity Model
+### 💸 Severity Model
 `XGBoost Regressor`
 Entraîné sur échelle logarithmique
 **→ Coût moyen si sinistre**
@@ -71,21 +71,21 @@ Entraîné sur échelle logarithmique
 ## ◈ Architecture
 
 ```
- Prediction-du-Montant-des-Sinistres
+📦 Prediction-du-Montant-des-Sinistres
 │
-├──  .github/workflows/ci.yml     ← CI/CD pipeline
-├──  app.py                        ← FastAPI (4 routes)
-├──  interface.py                 ← Streamlit web client
-├──  main.py                       ← Model training pipeline
-├──  Dockerfile                    ← Production image
-├──  pyproject.toml                ← UV dependencies
+├── 🔧 .github/workflows/ci.yml     ← CI/CD pipeline
+├── ⚡ app.py                        ← FastAPI (4 routes)
+├── 🖥️  interface.py                 ← Streamlit web client
+├── 🧠 main.py                       ← Model training pipeline
+├── 🐳 Dockerfile                    ← Production image
+├── 📋 pyproject.toml                ← UV dependencies
 │
-├──  models/
+├── 🤖 models/
 │   ├── model_frequency.pkl          ← Frequency model
 │   ├── model_severity.pkl           ← Severity model
 │   └── feature_names.pkl            ← Feature alignment
 │
-├──  src/
+├── 🔬 src/
 │   ├── preprocessing.py             ← Feature engineering
 │   ├── frequency.py                 ← Frequency model def
 │   ├── severity.py                  ← Severity model def
@@ -93,11 +93,11 @@ Entraîné sur échelle logarithmique
 │   ├── evaluation.py                ← Metrics & diagnostics
 │   └── visualization.py            ← Analysis charts
 │
-├──   tests/
+├── 🧪 tests/
 │   ├── test_api.py                  ← 4 routes + validation
 │   └── test_preprocessing.py       ← Unit tests
 │
-└──   data/
+└── 📊 data/
     ├── train.csv
     └── test.csv
 ```
@@ -116,7 +116,7 @@ Entraîné sur échelle logarithmique
 
 </div>
 
-###  Quick Install
+### ⚡ Quick Install
 
 ```bash
 # 1 — Install UV (blazing fast package manager)
@@ -242,6 +242,14 @@ docker run -p 8000:8000 actuarial-pricing-api
 
 <div align="center">
 
-<img src="https://capsule-render.vercel.app/api?type=venom&color=0:2d1b69,50:1a0533,100:0d0221&height=140&section=footer&text=Made%20with%20%E2%9D%A4%EF%B8%8F%20%26%20XGBoost&fontSize=24&fontColor=00d4ff&animation=twinkling&desc=@1drien%20·%20@elkiliayma-sys%20·%20@Kiane06&descColor=bd93f9&descAlignY=72" width="100%"/>
+[![@1drien](https://img.shields.io/badge/Made%20with%20%E2%9D%A4%EF%B8%8F%20%26%20XGBoost-0d1117?style=for-the-badge&logo=github&logoColor=00d4ff)](https://github.com/1drien)
+&nbsp;
+[![@elkiliayma-sys](https://img.shields.io/badge/@elkiliayma--sys-0d1117?style=for-the-badge&logo=github&logoColor=bd93f9)](https://github.com/elkiliayma-sys)
+&nbsp;
+[![@Kiane06](https://img.shields.io/badge/@Kiane06-0d1117?style=for-the-badge&logo=github&logoColor=ff79c6)](https://github.com/Kiane06)
+
+<br/>
+
+![wave](https://raw.githubusercontent.com/Trilokia/Trilokia/379277808c61ef204768a61bbc5d25bc7798ccf/bottom_header.svg)
 
 </div>
