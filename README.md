@@ -4,142 +4,158 @@
 
 <br/>
 
-<img src="https://readme-typing-svg.demolab.com?font=JetBrains+Mono&weight=700&size=22&pause=1000&color=00D4FF&center=true&vCenter=true&width=700&lines=Frequency+%C3%97+Severity+%C3%97+1.18+%3D+Final+Premium;XGBoost+%2B+HistGradientBoosting+Ensemble;FastAPI+%7C+Docker+%7C+GitHub+Actions+CI%2FCD;Built+by+%401drien+%C2%B7+%40elkiliayma-sys+%C2%B7+%40Kiane06" alt="Typing SVG" />
+<img src="https://readme-typing-svg.demolab.com?font=JetBrains+Mono&weight=700&size=22&pause=1000&color=00D4FF&center=true&vCenter=true&width=700&lines=Frequency+%C3%97+Severity+%C3%97+%3D+Final+Premium;XGBoost+%2B+HistGradientBoosting+Ensemble;FastAPI+%7C+Docker+%7C+GitHub+Actions+CI%2FCD;Built+by+%401drien+%C2%B7+%40elkiliayma-sys+%C2%B7+%40Kiane06" alt="Typing SVG" />
 
 <br/><br/>
-[![Python](https://img.shields.io/badge/Python-3.11-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
-[![FastAPI](https://img.shields.io/badge/FastAPI-0.109-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
-[![scikit-learn](https://img.shields.io/badge/scikit--learn-1.8-F7931E?style=for-the-badge&logo=scikit-learn&logoColor=white)](https://scikit-learn.org)
-[![XGBoost](https://img.shields.io/badge/XGBoost-2.1-189AB4?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0id2hpdGUiIGQ9Ik0xMiAyQzYuNDggMiAyIDYuNDggMiAxMnM0LjQ4IDEwIDEwIDEwIDEwLTQuNDggMTAtMTBTMTcuNTIgMiAxMiAyeiIvPjwvc3ZnPg==)](https://xgboost.readthedocs.io)
-[![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://docker.com)
-[![GitHub Actions](https://img.shields.io/badge/CI%2FCD-GitHub%20Actions-2088FF?style=for-the-badge&logo=github-actions&logoColor=white)](https://github.com/features/actions)
-[![UV](https://img.shields.io/badge/UV-Package%20Manager-7C3AED?style=for-the-badge&logo=astral&logoColor=white)](https://docs.astral.sh/uv/)
+
+[![Python](https://img.shields.io/badge/Python_3.11-FFD43B?style=for-the-badge&logo=python&logoColor=306998)](https://python.org)
+[![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi)](https://fastapi.tiangolo.com)
+[![scikit-learn](https://img.shields.io/badge/sklearn_1.8-F7931E?style=for-the-badge&logo=scikit-learn&logoColor=white)](https://scikit-learn.org)
+[![Docker](https://img.shields.io/badge/Docker-0db7ed?style=for-the-badge&logo=docker&logoColor=white)](https://docker.com)
+[![Streamlit](https://img.shields.io/badge/Streamlit-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white)](https://streamlit.io)
+[![UV](https://img.shields.io/badge/UV-7C3AED?style=for-the-badge&logo=astral&logoColor=white)](https://docs.astral.sh/uv/)
+[![CI/CD](https://img.shields.io/badge/GitHub_Actions-2088FF?style=for-the-badge&logo=github-actions&logoColor=white)](https://github.com/features/actions)
 
 <br/>
 
-> **REST API for auto insurance pricing** based on two Machine Learning models (frequency + severity).  
-> Industrializes notebook models into a production-ready REST API with Docker & CI/CD.
-
-<br/>
-
-**Authors**
-
-[![1drien](https://img.shields.io/badge/@1drien-181717?style=flat-square&logo=github&logoColor=white)](https://github.com/1drien)
-[![elkiliayma-sys](https://img.shields.io/badge/@elkiliayma--sys-181717?style=flat-square&logo=github&logoColor=white)](https://github.com/elkiliayma-sys)
-[![Kiane06](https://img.shields.io/badge/@Kiane06-181717?style=flat-square&logo=github&logoColor=white)](https://github.com/Kiane06)
+[![1drien](https://img.shields.io/badge/─%20@1drien%20─-0d1117?style=flat-square&logo=github&logoColor=00d4ff)](https://github.com/1drien)
+[![elkiliayma](https://img.shields.io/badge/─%20@elkiliayma--sys%20─-0d1117?style=flat-square&logo=github&logoColor=bd93f9)](https://github.com/elkiliayma-sys)
+[![Kiane06](https://img.shields.io/badge/─%20@Kiane06%20─-0d1117?style=flat-square&logo=github&logoColor=ff79c6)](https://github.com/Kiane06)
 
 </div>
 
+<br/>
+
 ---
 
-##  Pricing Principle
+## ◈ The Formula
 
 <div align="center">
 
 ```
-Final Premium (incl. tax) = P(claim) × Average claim cost × 1.18
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║    Premium (TTC)  =  P(sinistre)  ×  Coût moyen  ×  1.18   ║
+║                           ↑               ↑                  ║
+║                     Frequency         Severity               ║
+║                       Model            Model                 ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
 ```
 
 </div>
 
-| Model | Algorithm | Role |
-|-------|-----------|------|
-|  **Frequency** | XGBoost + HistGradientBoosting + Isotonic Calibration | Predicts P(at least one claim) |
-|  **Severity** | XGBoost Regressor (log scale) | Predicts average cost if claim occurs |
+<table align="center">
+<tr>
+<td align="center" width="50%">
 
-Models are trained via `main.py`, serialized with pickle into `models/`, then loaded by the API at startup.
+###  Frequency Model
+`XGBoost` + `HistGradientBoosting`
+Ensemble + Isotonic Calibration
+**→ P(au moins un sinistre)**
 
----
+</td>
+<td align="center" width="50%">
 
-##  Project Architecture
+###  Severity Model
+`XGBoost Regressor`
+Entraîné sur échelle logarithmique
+**→ Coût moyen si sinistre**
 
-```
-.
-├── .github/workflows/ci.yml   # CI/CD GitHub Actions pipeline
-├── app.py                     # FastAPI application (4 routes)
-├── interface.py               # Streamlit interface (web client)
-├── main.py                    # Model training pipeline
-├── conftest.py                # Pytest configuration
-├── Dockerfile                 # Production Docker image
-├── pyproject.toml             # Dependencies and metadata (UV)
-├── uv.lock                    # Pinned dependency versions
-├── models/
-│   ├── model_frequency.pkl    # Serialized frequency model
-│   ├── model_severity.pkl     # Serialized severity model
-│   └── feature_names.pkl      # Feature names for alignment
-├── src/
-│   ├── preprocessing.py       # Feature engineering + unit processing
-│   ├── frequency.py           # Frequency model definition
-│   ├── severity.py            # Severity model definition
-│   ├── prime_cv.py            # Out-Of-Fold cross-validation
-│   ├── evaluation.py          # Metrics and diagnostics
-│   └── visualization.py       # Analysis charts
-├── tests/
-│   ├── test_api.py            # Tests for all 4 API routes + validation
-│   └── test_preprocessing.py  # Unit tests for preprocessing
-├── data/
-│   ├── train.csv              # Training data
-│   └── test.csv               # Test data
-└── notebooks/
-    └── eda_preprocessing.ipynb # Exploration and development
-```
+</td>
+</tr>
+</table>
 
 ---
 
-##  Installation & Setup
+## ◈ Architecture
+
+```
+ Prediction-du-Montant-des-Sinistres
+│
+├──  .github/workflows/ci.yml     ← CI/CD pipeline
+├──  app.py                        ← FastAPI (4 routes)
+├──  interface.py                 ← Streamlit web client
+├──  main.py                       ← Model training pipeline
+├──  Dockerfile                    ← Production image
+├──  pyproject.toml                ← UV dependencies
+│
+├──  models/
+│   ├── model_frequency.pkl          ← Frequency model
+│   ├── model_severity.pkl           ← Severity model
+│   └── feature_names.pkl            ← Feature alignment
+│
+├──  src/
+│   ├── preprocessing.py             ← Feature engineering
+│   ├── frequency.py                 ← Frequency model def
+│   ├── severity.py                  ← Severity model def
+│   ├── prime_cv.py                  ← OOF cross-validation
+│   ├── evaluation.py                ← Metrics & diagnostics
+│   └── visualization.py            ← Analysis charts
+│
+├──   tests/
+│   ├── test_api.py                  ← 4 routes + validation
+│   └── test_preprocessing.py       ← Unit tests
+│
+└──   data/
+    ├── train.csv
+    └── test.csv
+```
+
+---
+
+## ◈ Getting Started
 
 ### Prerequisites
 
-![Python](https://img.shields.io/badge/Python-≥3.11-3776AB?style=flat-square&logo=python&logoColor=white)
-![UV](https://img.shields.io/badge/UV-required-7C3AED?style=flat-square)
+<div align="center">
 
-### Installation
+[![Python](https://skillicons.dev/icons?i=python)](https://python.org)
+[![Docker](https://skillicons.dev/icons?i=docker)](https://docker.com)
+[![GitHub Actions](https://skillicons.dev/icons?i=githubactions)](https://github.com/features/actions)
+
+</div>
+
+###  Quick Install
 
 ```bash
-# Install UV
+# 1 — Install UV (blazing fast package manager)
 curl -LsSf https://astral.sh/uv/install.sh | sh
 source $HOME/.local/bin/env
 
-# Clone the repository
+# 2 — Clone & install
 git clone https://github.com/1drien/Prediction-du-Montant-des-Sinistres.git
 cd Prediction-du-Montant-des-Sinistres
-
-# Install dependencies
 uv sync
-```
 
-### Run the API
-
-```bash
+# 3 — Launch API
 uv run uvicorn app:app --reload
-```
+# → http://127.0.0.1:8000
+# → http://127.0.0.1:8000/docs  (Swagger)
 
-> API available at `http://127.0.0.1:8000` · Swagger docs at `http://127.0.0.1:8000/docs`
-
-### Run the Streamlit Interface
-
-```bash
+# 4 — Launch Streamlit UI
 uv run streamlit run interface.py
-```
 
-### Run Tests
-
-```bash
+# 5 — Run tests
 uv run pytest tests/ -v
 ```
 
 ---
 
-##  API Routes
+## ◈ API Routes
+
+<div align="center">
 
 | Method | Route | Description |
-|--------|-------|-------------|
-| `GET` | `/health` | Check API health status |
-| `POST` | `/predict_frequency` | Predict claim probability |
-| `POST` | `/predict_amount` | Predict average claim cost |
-| `POST` | `/predict` | Calculate full premium (frequency × severity × 1.18) |
+|:------:|-------|-------------|
+| ![GET](https://img.shields.io/badge/GET-00C853?style=flat-square) | `/health` | Health check |
+| ![POST](https://img.shields.io/badge/POST-2196F3?style=flat-square) | `/predict_frequency` | P(sinistre) |
+| ![POST](https://img.shields.io/badge/POST-2196F3?style=flat-square) | `/predict_amount` | Coût moyen estimé |
+| ![POST](https://img.shields.io/badge/POST-9C27B0?style=flat-square) | `/predict` | **Prime finale TTC** |
 
-### Example Request
+</div>
+
+### Request
 
 ```bash
 curl -X POST http://127.0.0.1:8000/predict \
@@ -158,81 +174,67 @@ curl -X POST http://127.0.0.1:8000/predict \
   }'
 ```
 
-### Example Response
+### Response
 
 ```json
 {
-  "predicted_claim_frequency": 0.0417,
-  "estimated_severity_eur": 1860.79,
-  "technical_pure_premium_eur": 77.62,
+  "predicted_claim_frequency":   0.0417,
+  "estimated_severity_eur":   1860.79,
+  "technical_pure_premium_eur":  77.62,
   "final_total_premium_ttc_eur": 91.59
 }
 ```
 
 ---
 
-##  Docker
+## ◈ Docker
 
 ```bash
-# Build the image
 docker build -t actuarial-pricing-api .
-
-# Run the container
 docker run -p 8000:8000 actuarial-pricing-api
 ```
 
 ---
 
-##  CI/CD
-
-The GitHub Actions pipeline (`.github/workflows/ci.yml`) runs automatically on every push to `main` or `dev`:
-
-```
-Push to main/dev
-      │
-      ▼
- 1. Install ──► UV + dependencies
-      │
-      ▼
- 2. Lint ────► Flake8 (code quality)
-      │
-      ▼
- 3. Tests ───► Pytest (8 tests: preprocessing + API routes)
-      │
-      ▼
- 4. Docker ──► Image build validation
-```
-
----
-
-##  Dependency Management
-
-This project uses **UV** instead of pip/requirements.txt:
-
-| File | Role |
-|------|------|
-| `pyproject.toml` | Project description, separates prod vs dev dependencies |
-| `uv.lock` | Pins exact versions for full reproducibility |
-| `uv sync` | Installs the environment |
-| `uv run` | Executes within the virtual environment |
-
----
-
-##  Tech Stack
+## ◈ CI/CD Pipeline
 
 <div align="center">
+
+```
+  push to main/dev
+        │
+        ▼
+  ┌─────────────┐     ┌──────────────┐     ┌──────────────┐     ┌──────────────┐
+  │  📦 Install  │────▶│  🔍  Lint    │────▶│  🧪  Tests   │────▶│  🐳  Docker  │
+  │  UV + deps  │     │   Flake8     │     │  Pytest ×8   │     │ Image build  │
+  └─────────────┘     └──────────────┘     └──────────────┘     └──────────────┘
+```
+
+</div>
+
+---
+
+## ◈ Tech Stack
+
+<div align="center">
+
+[![Python](https://skillicons.dev/icons?i=python)](https://python.org)
+[![FastAPI](https://skillicons.dev/icons?i=fastapi)](https://fastapi.tiangolo.com)
+[![Docker](https://skillicons.dev/icons?i=docker)](https://docker.com)
+[![GitHub Actions](https://skillicons.dev/icons?i=githubactions)](https://github.com/features/actions)
+[![Linux](https://skillicons.dev/icons?i=linux)](https://linux.org)
 
 | Layer | Technology |
 |-------|-----------|
 | **API** | FastAPI + Uvicorn |
 | **ML** | scikit-learn 1.8 · XGBoost 2.1 |
-| **Validation** | Pydantic (schemas + auto Swagger) |
-| **Interface** | Streamlit |
-| **Dependencies** | UV (pyproject.toml + uv.lock) |
-| **Containerization** | Docker |
+| **Validation** | Pydantic + auto Swagger |
+| **UI** | Streamlit |
+| **Packages** | UV — `pyproject.toml` + `uv.lock` |
+| **Container** | Docker |
 | **CI/CD** | GitHub Actions |
-| **Tests** | Pytest (8 tests) |
-| **Code quality** | Flake8 |
+| **Tests** | Pytest · 8 tests |
+| **Quality** | Flake8 |
 
 </div>
 
