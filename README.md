@@ -28,20 +28,21 @@
 
 ---
 
-## ◈ The Formula
+## The Formula
 
 <div align="center">
 
 ```
 ╔══════════════════════════════════════════════════════════════╗
 ║                                                              ║
-║    Premium (TTC)  =  P(sinistre)  ×  Coût moyen  ×  1.18   ║
+║    Premium (TTC)  =  P(sinistre)  ×  Coût moyen  ×  1.18     ║
 ║                           ↑               ↑                  ║
 ║                     Frequency         Severity               ║
 ║                       Model            Model                 ║
 ║                                                              ║
 ╚══════════════════════════════════════════════════════════════╝
 ```
+> `× 1.18` correspond au **chargement commercial** (18%) appliqué sur la prime pure pour couvrir les frais de gestion, d'acquisition et la marge de l'assureur.
 
 </div>
 
@@ -49,7 +50,7 @@
 <tr>
 <td align="center" width="50%">
 
-### 🎯 Frequency Model
+###  Frequency Model
 `XGBoost` + `HistGradientBoosting`
 Ensemble + Isotonic Calibration
 **→ P(au moins un sinistre)**
@@ -57,7 +58,7 @@ Ensemble + Isotonic Calibration
 </td>
 <td align="center" width="50%">
 
-### 💸 Severity Model
+### Severity Model
 `XGBoost Regressor`
 Entraîné sur échelle logarithmique
 **→ Coût moyen si sinistre**
@@ -68,7 +69,7 @@ Entraîné sur échelle logarithmique
 
 ---
 
-## ◈ Architecture
+##  Architecture
 
 ```
 📦 Prediction-du-Montant-des-Sinistres
@@ -104,7 +105,7 @@ Entraîné sur échelle logarithmique
 
 ---
 
-## ◈ Getting Started
+##  Getting Started
 
 ### Prerequisites
 
@@ -116,7 +117,7 @@ Entraîné sur échelle logarithmique
 
 </div>
 
-### ⚡ Quick Install
+### Quick Install
 
 ```bash
 # 1 — Install UV (blazing fast package manager)
@@ -142,7 +143,7 @@ uv run pytest tests/ -v
 
 ---
 
-## ◈ API Routes
+## API Routes
 
 <div align="center">
 
@@ -187,7 +188,7 @@ curl -X POST http://127.0.0.1:8000/predict \
 
 ---
 
-## ◈ Docker
+## Docker
 
 ```bash
 docker build -t actuarial-pricing-api .
@@ -196,7 +197,7 @@ docker run -p 8000:8000 actuarial-pricing-api
 
 ---
 
-## ◈ CI/CD Pipeline
+## CI/CD Pipeline
 
 <div align="center">
 
@@ -205,7 +206,7 @@ docker run -p 8000:8000 actuarial-pricing-api
         │
         ▼
   ┌─────────────┐     ┌──────────────┐     ┌──────────────┐     ┌──────────────┐
-  │  📦 Install  │────▶│  🔍  Lint    │────▶│  🧪  Tests   │────▶│  🐳  Docker  │
+  │  📦 Install │────▶  🔍  Lint    │────▶│  🧪  Tests   │────▶│ 🐳  Docker│
   │  UV + deps  │     │   Flake8     │     │  Pytest ×8   │     │ Image build  │
   └─────────────┘     └──────────────┘     └──────────────┘     └──────────────┘
 ```
